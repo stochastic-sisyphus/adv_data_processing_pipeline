@@ -328,4 +328,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Documentation
 
-For more detailed usage instructions and examples, please refer to the full documentation [link to documentation if available].
+For more detailed usage instructions and examples, please refer to the full documentation [here](https://your-documentation-url.com).
