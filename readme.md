@@ -3,6 +3,8 @@
 
 This project implements a sophisticated data processing pipeline using Python, designed to handle large-scale data processing tasks efficiently. The pipeline includes various stages such as data loading, cleaning, transformation, analysis, and visualization.
 
+This package is available on PyPI, and you can view it at the provided URL: [https://pypi.org/project/advanced-data-processing/0.1.0/](https://pypi.org/project/advanced-data-processing/0.1.0/).
+
 ## Features
 
 - Flexible data loading from various sources (CSV, Excel, JSON, Parquet, SQL databases, APIs, S3)
