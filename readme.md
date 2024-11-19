@@ -3,7 +3,7 @@
 
 This project implements a sophisticated data processing pipeline using Python, designed to handle large-scale data processing tasks efficiently. The pipeline includes various stages such as data loading, cleaning, transformation, analysis, and visualization.
 
-This package is available on PyPI, and you can view it at the provided URL: [https://pypi.org/project/advanced-data-processing/0.2.0/](https://pypi.org/project/advanced-data-processing/0.2.0/).
+This package is available on PyPI, and you can view it at the provided URL: [https://pypi.org/project/advanced-data-processing/0.2.1/](https://pypi.org/project/advanced-data-processing/0.2.1/).
 
 [![PyPI version](https://badge.fury.io/py/advanced-data-processing.svg)](https://badge.fury.io/py/advanced-data-processing)
 
@@ -338,4 +338,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Documentation
 
-For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.2.0/).
+For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.2.1/).

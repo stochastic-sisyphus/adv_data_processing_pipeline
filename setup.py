@@ -5,7 +5,7 @@ with open("readme.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="advanced-data-processing",
-    version="0.2.0",
+    version="0.2.1",
     author="Vanessa Beck",
     author_email="your.email@example.com",
     description="An advanced data processing pipeline for machine learning workflows",
