@@ -1,0 +1,6 @@
+include README.md
+include requirements.txt
+include adv_data_processing/config.yaml
+recursive-include adv_data_processing *.py
+prune tests
+
