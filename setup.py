@@ -1,9 +1,31 @@
 from setuptools import setup, find_packages
 
+with open("readme.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
     name="advanced-data-processing",
     version="0.2.0",
+    author="Vanessa Beck",
+    author_email="your.email@example.com",
+    description="An advanced data processing pipeline for machine learning workflows",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/stochastic-sisyphus/adv_data_processing_pipeline",
     packages=find_packages(exclude=['tests*', 'test*']),
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    python_requires='>=3.8',
     install_requires=[
         'dask>=2023.3.0',
         'pandas>=1.5.0',
@@ -20,17 +42,5 @@ setup(
         'requests>=2.28.0',
         'cerberus>=1.3.4',
     ],
-    extras_require={
-        'dev': [
-            'pytest>=7.0.0',
-            'pytest-cov>=4.0.0',
-            'pytest-mock>=3.10.0',
-            'pytest-asyncio>=0.21.0',
-            'hypothesis>=6.75.3',
-        ],
-    },
-    author="Vanessa Beck",
-    description="An advanced data processing pipeline",
-    python_requires='>=3.8',
 )
 
