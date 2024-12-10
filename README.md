@@ -24,6 +24,16 @@ This package is available on PyPI, and you can view it at the provided URL: [htt
 - Automatic feature engineering
 - Handling of imbalanced datasets
 - Automatic hyperparameter tuning
+- Automatic model checkpointing and experiment tracking
+- Integrated GPU support with fallback to CPU
+- Comprehensive logging and monitoring
+- Model explainability tools (SHAP, LIME)
+- Data drift detection and monitoring
+- API endpoint generation for model serving
+- Model versioning and registry
+- Automated model documentation generation
+- CI/CD pipeline integration
+- Containerization support with Docker
 
 ## Requirements
 
@@ -39,6 +49,14 @@ See `requirements.txt` for a full list of dependencies. Key libraries include:
 - matplotlib
 - seaborn
 - imbalanced-learn
+- mlflow>=1.20.0
+- optuna>=2.10.0
+- shap>=0.40.0
+- lime>=0.2.0
+- fastapi>=0.68.0
+- docker>=5.0.0
+- great-expectations>=0.13.0
+- kedro>=0.17.0
 
 ## Installation
 
@@ -60,6 +78,12 @@ To build and install the package locally:
 
 ```
 pip install -e .
+```
+
+For development installation with all features:
+
+```
+pip install -r requirements-dev.txt
 ```
 
 ## Usage
