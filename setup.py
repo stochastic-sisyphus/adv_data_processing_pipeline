@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="advanced-data-processing",
-    version="0.2.5",  # Increment version
+    version="0.2.6",  # Increment version
     author="Vanessa Beck",
     author_email="your.email@example.com",
     description="An advanced data processing pipeline for machine learning workflows",
@@ -22,6 +22,8 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
