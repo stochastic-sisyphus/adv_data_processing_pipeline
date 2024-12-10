@@ -4,15 +4,31 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder, OneHotEncoder
 from sklearn.impute import SimpleImputer
+import logging
+from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 def handle_missing_values(
     df: pd.DataFrame,
     numeric_strategy: str = 'mean',
     categorical_strategy: str = 'most_frequent',
-    numeric_fill_value: float = None,
-    categorical_fill_value: str = None
+    numeric_fill_value: Optional[float] = None,
+    categorical_fill_value: Optional[str] = None
 ) -> pd.DataFrame:
-    """Handle missing values in both numeric and categorical columns."""
+    """
+    Handle missing values in both numeric and categorical columns.
+
+    Args:
+        df (pd.DataFrame): The dataframe to handle missing values in.
+        numeric_strategy (str, optional): Strategy for numeric columns. Defaults to 'mean'.
+        categorical_strategy (str, optional): Strategy for categorical columns. Defaults to 'most_frequent'.
+        numeric_fill_value (Optional[float], optional): Fill value for numeric columns if strategy is 'constant'. Defaults to None.
+        categorical_fill_value (Optional[str], optional): Fill value for categorical columns if strategy is 'constant'. Defaults to None.
+
+    Returns:
+        pd.DataFrame: Dataframe with missing values handled.
+    """
     df = df.copy()
     
     # Separate numeric and categorical columns
@@ -38,13 +54,23 @@ def handle_missing_values(
                 imputer = SimpleImputer(strategy=categorical_strategy)
                 df[col] = imputer.fit_transform(df[[col]]).ravel()
     
+    logger.info("Handled missing values")
     return df
 
 def encode_categorical_variables(
     df: pd.DataFrame,
     encoding_type: str = 'onehot'
 ) -> pd.DataFrame:
-    """Encode categorical variables using specified method."""
+    """
+    Encode categorical variables using specified method.
+
+    Args:
+        df (pd.DataFrame): The dataframe to encode categorical variables in.
+        encoding_type (str, optional): Encoding type ('onehot' or 'label'). Defaults to 'onehot'.
+
+    Returns:
+        pd.DataFrame: Dataframe with encoded categorical variables.
+    """
     df = df.copy()
     categorical_cols = df.select_dtypes(include=['object', 'category']).columns
     
@@ -72,13 +98,23 @@ def encode_categorical_variables(
         else:
             raise ValueError(f"Invalid encoding type: {encoding_type}")
     
+    logger.info("Encoded categorical variables")
     return df
 
 def scale_numerical_features(
     df: pd.DataFrame,
     scaling_type: str = 'standard'
 ) -> pd.DataFrame:
-    """Scale numerical features using specified method."""
+    """
+    Scale numerical features using specified method.
+
+    Args:
+        df (pd.DataFrame): The dataframe to scale numerical features in.
+        scaling_type (str, optional): Scaling type ('standard' or 'minmax'). Defaults to 'standard'.
+
+    Returns:
+        pd.DataFrame: Dataframe with scaled numerical features.
+    """
     df = df.copy()
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
     
@@ -100,18 +136,33 @@ def scale_numerical_features(
         else:
             raise ValueError(f"Invalid scaling type: {scaling_type}")
     
+    logger.info("Scaled numerical features")
     return df
 
 def preprocess_dataset(
     df: pd.DataFrame,
     numeric_missing_strategy: str = 'mean',
     categorical_missing_strategy: str = 'most_frequent',
-    numeric_fill_value: float = None,
-    categorical_fill_value: str = None,
+    numeric_fill_value: Optional[float] = None,
+    categorical_fill_value: Optional[str] = None,
     encoding_type: str = 'onehot',
     scaling_type: str = 'standard'
 ) -> pd.DataFrame:
-    """Apply full preprocessing pipeline to the dataset."""
+    """
+    Apply full preprocessing pipeline to the dataset.
+
+    Args:
+        df (pd.DataFrame): The dataframe to preprocess.
+        numeric_missing_strategy (str, optional): Strategy for numeric columns. Defaults to 'mean'.
+        categorical_missing_strategy (str, optional): Strategy for categorical columns. Defaults to 'most_frequent'.
+        numeric_fill_value (Optional[float], optional): Fill value for numeric columns if strategy is 'constant'. Defaults to None.
+        categorical_fill_value (Optional[str], optional): Fill value for categorical columns if strategy is 'constant'. Defaults to None.
+        encoding_type (str, optional): Encoding type ('onehot' or 'label'). Defaults to 'onehot'.
+        scaling_type (str, optional): Scaling type ('standard' or 'minmax'). Defaults to 'standard'.
+
+    Returns:
+        pd.DataFrame: Preprocessed dataframe.
+    """
     df = df.copy()
     
     # Handle missing values
@@ -129,5 +180,5 @@ def preprocess_dataset(
     # Scale numerical features
     df = scale_numerical_features(df, scaling_type=scaling_type)
     
+    logger.info("Preprocessed dataset")
     return df
-

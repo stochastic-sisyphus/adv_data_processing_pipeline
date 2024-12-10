@@ -30,7 +30,15 @@ class MetricsManager:
     
     @classmethod
     def get_metrics(cls, task_type: str) -> Dict[str, Callable]:
-        """Get metrics for specified task type."""
+        """
+        Get metrics for specified task type.
+
+        Args:
+            task_type (str): The type of task ('classification' or 'regression').
+
+        Returns:
+            Dict[str, Callable]: Dictionary of metric names and their corresponding functions.
+        """
         if task_type == 'classification':
             return cls.CLASSIFICATION_METRICS
         elif task_type == 'regression':
@@ -45,7 +53,18 @@ class MetricsManager:
         metrics: List[str],
         task_type: str
     ) -> Dict[str, float]:
-        """Calculate specified metrics."""
+        """
+        Calculate specified metrics.
+
+        Args:
+            y_true (np.ndarray): True labels or values.
+            y_pred (np.ndarray): Predicted labels or values.
+            metrics (List[str]): List of metric names to calculate.
+            task_type (str): The type of task ('classification' or 'regression').
+
+        Returns:
+            Dict[str, float]: Dictionary of calculated metrics.
+        """
         results = {}
         available_metrics = MetricsManager.get_metrics(task_type)
         
@@ -68,7 +87,17 @@ class MetricsManager:
         y_pred: np.ndarray,
         sample_weights: Optional[np.ndarray] = None
     ) -> Dict[str, Any]:
-        """Calculate advanced metrics with detailed statistics."""
+        """
+        Calculate advanced metrics with detailed statistics.
+
+        Args:
+            y_true (np.ndarray): True labels.
+            y_pred (np.ndarray): Predicted labels.
+            sample_weights (Optional[np.ndarray], optional): Sample weights. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: Dictionary of advanced metrics and statistics.
+        """
         basic_metrics = cls.calculate_metrics(y_true, y_pred, 
                                            ['accuracy', 'precision', 'recall'], 
                                            'classification')
@@ -90,7 +119,13 @@ class MetricsManager:
 
     @staticmethod
     def generate_metrics_report(metrics: Dict[str, Any], output_file: str):
-        """Generate detailed metrics report."""
+        """
+        Generate detailed metrics report.
+
+        Args:
+            metrics (Dict[str, Any]): Dictionary of metrics and their values.
+            output_file (str): Path to the output file.
+        """
         with open(output_file, 'w') as f:
             f.write("Model Evaluation Report\n")
             f.write("=====================\n\n")

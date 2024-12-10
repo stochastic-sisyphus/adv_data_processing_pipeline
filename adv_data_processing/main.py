@@ -1,30 +1,32 @@
+"""Main module for the advanced data processing pipeline."""
+
 import pandas as pd
 import numpy as np
 import logging
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 from pathlib import Path
 import yaml
-from pipeline import process_data
+from .pipeline import process_data
 import dask.dataframe as dd
 import argparse
-from utils import *
-from visualization import *
-from text_analytics import *
-from entity_recognition import *
-from topic_modeling import *
-from feature_selection import *
-from dimensionality_reduction import *
-from model_evaluation import *
-from data_validation import *
-from error_handling import *
+from .utils import *
+from .visualization import *
+from .text_analytics import *
+from .entity_recognition import *
+from .topic_modeling import *
+from .feature_selection import *
+from .dimensionality_reduction import *
+from .model_evaluation import *
+from .data_validation import *
+from .error_handling import *
 from dask.distributed import Client, progress
 from tqdm import tqdm
 import joblib
 import os
-from feature_engineering import auto_feature_engineering
-from imbalanced_data import handle_imbalanced_data
+from .feature_engineering import auto_feature_engineering
+from .imbalanced_data import handle_imbalanced_data
 from dask_ml.model_selection import GridSearchCV
-from transformation import (
+from .transformation import (
     transform_data, handle_transform_step, get_scaler, 
     get_encoder, get_encoded_feature_names
 )
@@ -34,7 +36,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 def setup_dask_client(args: argparse.Namespace) -> Client:
-    """Set up and return a Dask client based on arguments."""
+    """
+    Set up and return a Dask client based on arguments.
+
+    Args:
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        Client: Dask client.
+    """
     if args.scheduler_address:
         client = Client(args.scheduler_address)
     else:
@@ -42,16 +52,34 @@ def setup_dask_client(args: argparse.Namespace) -> Client:
     logger.info(f"Dask client set up with {client.ncores} cores")
     return client
 
-def initialize_pipeline_state(args: argparse.Namespace) -> Tuple[dd.DataFrame, List[str]]:
-    """Initialize or resume pipeline state."""
+def initialize_pipeline_state(args: argparse.Namespace) -> Tuple[Optional[dd.DataFrame], List[str]]:
+    """
+    Initialize or resume pipeline state.
+
+    Args:
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        Tuple[Optional[dd.DataFrame], List[str]]: Dataframe and list of completed steps.
+    """
     if args.resume:
         pipeline_state = load_pipeline_state(args.resume)
         logger.info(f"Resumed from state: {args.resume}")
         return pipeline_state['data'], pipeline_state['completed_steps']
     return None, []
 
-def handle_text_analytics(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> Dict:
-    """Process text analytics steps and return results."""
+def handle_text_analytics(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> Dict[str, Any]:
+    """
+    Process text analytics steps and return results.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        Dict[str, Any]: Results of text analytics.
+    """
     results = {}
     if args.analyze_text:
         text_column = config['text_column']
@@ -61,8 +89,18 @@ def handle_text_analytics(data: dd.DataFrame, config: Dict, args: argparse.Names
         logger.info(f"Text summary: {results['summary']}")
     return results
 
-def handle_entity_extraction(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> Dict:
-    """Process entity extraction and return results."""
+def handle_entity_extraction(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> Dict[str, Any]:
+    """
+    Process entity extraction and return results.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        Dict[str, Any]: Results of entity extraction.
+    """
     results = {}
     if args.extract_entities:
         text_column = config['text_column']
@@ -71,8 +109,18 @@ def handle_entity_extraction(data: dd.DataFrame, config: Dict, args: argparse.Na
         plot_entity_distribution(results['entities'])
     return results
 
-def handle_model_training(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> Any:
-    """Handle model training and evaluation."""
+def handle_model_training(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> Any:
+    """
+    Handle model training and evaluation.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        Any: Trained model.
+    """
     if 'model_type' not in config:
         return None
 
@@ -89,8 +137,19 @@ def handle_model_training(data: dd.DataFrame, config: Dict, args: argparse.Names
     logger.info(f"Model evaluation results: {evaluation_results}")
     return model
 
-def perform_auto_tuning(model: Any, X: dd.DataFrame, y: dd.Series, config: Dict) -> Any:
-    """Perform hyperparameter tuning."""
+def perform_auto_tuning(model: Any, X: dd.DataFrame, y: dd.Series, config: Dict[str, Any]) -> Any:
+    """
+    Perform hyperparameter tuning.
+
+    Args:
+        model (Any): Model to be tuned.
+        X (dd.DataFrame): Feature data.
+        y (dd.Series): Target data.
+        config (Dict[str, Any]): Configuration dictionary.
+
+    Returns:
+        Any: Best estimator after tuning.
+    """
     try:
         param_grid = config.get('param_grid', {})
         grid_search = GridSearchCV(model, param_grid, cv=3)
@@ -103,9 +162,21 @@ def perform_auto_tuning(model: Any, X: dd.DataFrame, y: dd.Series, config: Dict)
         model.fit(X, y)
         return model
 
-def process_pipeline_step(step: str, data: dd.DataFrame, config: Dict, args: argparse.Namespace, 
-                         custom_plugins: Dict) -> dd.DataFrame:
-    """Process a single pipeline step and return updated data."""
+def process_pipeline_step(step: str, data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace, 
+                         custom_plugins: Dict[str, Callable]) -> dd.DataFrame:
+    """
+    Process a single pipeline step and return updated data.
+
+    Args:
+        step (str): Pipeline step to be processed.
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+        custom_plugins (Dict[str, Callable]): Custom plugins.
+
+    Returns:
+        dd.DataFrame: Updated dataframe.
+    """
     if args.use_cache:
         cached_result = load_cached_result(step)
         if cached_result is not None:
@@ -140,44 +211,99 @@ def process_pipeline_step(step: str, data: dd.DataFrame, config: Dict, args: arg
 
     return processed_data
 
-def handle_transform_step(data: dd.DataFrame, config: Dict) -> dd.DataFrame:
-    """Handle the transform pipeline step."""
+def handle_transform_step(data: dd.DataFrame, config: Dict[str, Any]) -> dd.DataFrame:
+    """
+    Handle the transform pipeline step.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+
+    Returns:
+        dd.DataFrame: Transformed dataframe.
+    """
     return process_data(data, steps=['transform'],
                        numeric_features=config.get('numeric_features'),
                        categorical_features=config.get('categorical_features'),
                        scale_strategy=config.get('scale_strategy', 'standard'),
                        encode_strategy=config.get('encode_strategy', 'onehot'))
 
-def handle_validation_step(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> dd.DataFrame:
-    """Handle the validation pipeline step."""
+def handle_validation_step(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> dd.DataFrame:
+    """
+    Handle the validation pipeline step.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        dd.DataFrame: Validated dataframe.
+    """
     if args.validate_schema:
         schema_valid = validate_data_schema(data, config['data_schema'])
         logger.info(f"Data schema validation result: {schema_valid}")
     return data
 
-def handle_feature_selection(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> dd.DataFrame:
-    """Handle feature selection step."""
+def handle_feature_selection(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> dd.DataFrame:
+    """
+    Handle feature selection step.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        dd.DataFrame: Dataframe with selected features.
+    """
     if args.select_features:
         selected_features = select_features(data, config['target_column'], 
                                          config.get('feature_selection_method', 'mutual_info'))
         return data[selected_features + [config['target_column']]]
     return data
 
-def handle_dimension_reduction(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> dd.DataFrame:
-    """Handle dimensionality reduction step."""
+def handle_dimension_reduction(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> dd.DataFrame:
+    """
+    Handle dimensionality reduction step.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        dd.DataFrame: Dataframe with reduced dimensions.
+    """
     if args.reduce_dimensions:
         reduced_data = reduce_dimensions(data, config.get('n_components', 2), 
                                       config.get('reduction_method', 'pca'))
         return dd.concat([data, reduced_data], axis=1)
     return data
 
-def handle_feature_engineering(data: dd.DataFrame, config: Dict, args: argparse.Namespace) -> dd.DataFrame:
-    """Handle feature engineering step."""
+def handle_feature_engineering(data: dd.DataFrame, config: Dict[str, Any], args: argparse.Namespace) -> dd.DataFrame:
+    """
+    Handle feature engineering step.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        config (Dict[str, Any]): Configuration dictionary.
+        args (argparse.Namespace): Command line arguments.
+
+    Returns:
+        dd.DataFrame: Dataframe with engineered features.
+    """
     if args.auto_feature_engineering:
         return auto_feature_engineering(data, config['target_column'])
     return data
 
 def main(args: argparse.Namespace) -> None:
+    """
+    Main function to execute the data processing pipeline.
+
+    Args:
+        args (argparse.Namespace): Command line arguments.
+    """
     client = None
     try:
         config = load_and_validate_config(args.config)
@@ -206,15 +332,33 @@ def main(args: argparse.Namespace) -> None:
             client.close()
 
 def load_and_validate_config(config_path: str) -> Dict[str, Any]:
-    """Separate function for config loading and validation."""
+    """
+    Load and validate the configuration file.
+
+    Args:
+        config_path (str): Path to the configuration file.
+
+    Returns:
+        Dict[str, Any]: Configuration dictionary.
+    """
     config = load_config(config_path)
     if not validate_config(config):
         raise ValueError("Invalid configuration file")
     return config
 
 def process_pipeline(steps: List[str], args: argparse.Namespace, config: Dict[str, Any], 
-                     processed_data: Any, completed_steps: List[str], custom_plugins: Dict[str, Any]) -> None:
-    """Dedicated function for pipeline processing."""
+                     processed_data: Optional[dd.DataFrame], completed_steps: List[str], custom_plugins: Dict[str, Callable]) -> None:
+    """
+    Process the pipeline steps.
+
+    Args:
+        steps (List[str]): List of pipeline steps.
+        args (argparse.Namespace): Command line arguments.
+        config (Dict[str, Any]): Configuration dictionary.
+        processed_data (Optional[dd.DataFrame]): Dataframe containing the data.
+        completed_steps (List[str]): List of completed steps.
+        custom_plugins (Dict[str, Callable]): Custom plugins.
+    """
     with tqdm(total=len(steps), desc="Processing Pipeline") as pbar:
         for step in steps:
             if step not in completed_steps:
@@ -224,14 +368,26 @@ def process_pipeline(steps: List[str], args: argparse.Namespace, config: Dict[st
                 save_pipeline_state({'data': processed_data, 'completed_steps': completed_steps}, 
                                   f'pipeline_state_{step}.pkl')
 
-def save_processed_data(processed_data: Any, args: argparse.Namespace, config: Dict[str, Any]) -> None:
-    """Dedicated function for saving processed data."""
+def save_processed_data(processed_data: dd.DataFrame, args: argparse.Namespace, config: Dict[str, Any]) -> None:
+    """
+    Save the processed data.
+
+    Args:
+        processed_data (dd.DataFrame): Dataframe containing the processed data.
+        args (argparse.Namespace): Command line arguments.
+        config (Dict[str, Any]): Configuration dictionary.
+    """
     output_file = args.output or config['output_file']
     processed_data.to_csv(output_file, index=False, single_file=True)
     logger.info(f"Processed data saved to {output_file}")
 
 def parse_arguments() -> argparse.Namespace:
-    """Parse command line arguments."""
+    """
+    Parse command line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed command line arguments.
+    """
     parser = argparse.ArgumentParser(description="Advanced Data Processing Pipeline")
     parser.add_argument('--config', type=str, default='config.yaml', help='Path to the configuration file')
     parser.add_argument('--output', type=str, help='Output file path (overrides config file)')
@@ -260,7 +416,15 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 def generate_report(data: dd.DataFrame, steps: List[str], config: Dict[str, Any], output_file: str) -> None:
-    """Generate a comprehensive report of the pipeline execution."""
+    """
+    Generate a comprehensive report of the pipeline execution.
+
+    Args:
+        data (dd.DataFrame): Dataframe containing the data.
+        steps (List[str]): List of completed steps.
+        config (Dict[str, Any]): Configuration dictionary.
+        output_file (str): Path to the output file.
+    """
     report = [
         "Data Processing Pipeline Report",
         "=" * 30,
@@ -285,8 +449,20 @@ def generate_report(data: dd.DataFrame, steps: List[str], config: Dict[str, Any]
     logger.info(f"Comprehensive report generated: {report_file}")
 
 def execute_step(step: str, args: argparse.Namespace, config: Dict[str, Any], 
-                processed_data: dd.DataFrame, custom_plugins: Dict[str, Any]) -> dd.DataFrame:
-    """Execute a single pipeline step."""
+                processed_data: Optional[dd.DataFrame], custom_plugins: Dict[str, Callable]) -> dd.DataFrame:
+    """
+    Execute a single pipeline step.
+
+    Args:
+        step (str): Pipeline step to be executed.
+        args (argparse.Namespace): Command line arguments.
+        config (Dict[str, Any]): Configuration dictionary.
+        processed_data (Optional[dd.DataFrame]): Dataframe containing the data.
+        custom_plugins (Dict[str, Callable]): Custom plugins.
+
+    Returns:
+        dd.DataFrame: Updated dataframe.
+    """
     if args.use_cache:
         cached_result = load_cached_result(step)
         if cached_result is not None:
