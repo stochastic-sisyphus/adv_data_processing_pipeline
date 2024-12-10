@@ -362,3 +362,48 @@ For more detailed usage instructions and examples, please refer to the full docu
 ## Tutorials and Examples
 
 ### Time Series Analysis Example
+
+## Environment Setup Instructions
+
+To set up the environment for this project, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/stochastic-sisyphus/adv_data_processing_pipeline.git
+   cd adv_data_processing_pipeline
+   ```
+
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. For development, install additional dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
+## Contribution Guidelines
+
+We welcome contributions to the Advanced Data Processing Pipeline project. To contribute, please follow these guidelines:
+
+1. Fork the repository and create a new branch for your feature or bugfix.
+2. Write clear, concise commit messages.
+3. Ensure that your code follows the project's coding standards and passes all tests.
+4. Submit a pull request with a detailed description of your changes.
+
+## Changelog
+
+### Version 0.2.6
+
+- Added environment setup instructions to the README.
+- Added contribution guidelines to the README.
+- Added changelog to the README.
+- Added performance reports and pipeline diagrams.
+- Added baseline model metrics for comparison.

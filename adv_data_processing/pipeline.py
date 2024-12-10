@@ -55,14 +55,35 @@ from .feature_engineering import auto_feature_engineering
 from .imbalanced_data import handle_imbalanced_data
 
 def apply_custom_transformations(df: dd.DataFrame, custom_funcs: List[Callable], pbar: tqdm) -> dd.DataFrame:
-    """Apply custom transformation functions to the dataframe."""
+    """
+    Apply custom transformation functions to the dataframe.
+
+    Args:
+        df (dd.DataFrame): The dataframe to transform.
+        custom_funcs (List[Callable]): List of custom transformation functions.
+        pbar (tqdm): Progress bar.
+
+    Returns:
+        dd.DataFrame: Transformed dataframe.
+    """
     for func in custom_funcs:
         df = func(df)
         pbar.update(1 / len(custom_funcs))
     return df
 
 def _execute_step(step: str, df: dd.DataFrame, params: dict, pbar: tqdm) -> dd.DataFrame:
-    """Execute a single pipeline step."""
+    """
+    Execute a single pipeline step.
+
+    Args:
+        step (str): The pipeline step to execute.
+        df (dd.DataFrame): The dataframe to process.
+        params (dict): Parameters for the step.
+        pbar (tqdm): Progress bar.
+
+    Returns:
+        dd.DataFrame: Processed dataframe.
+    """
     step_handlers = {
         'load': lambda: load_data(params['source'], chunk_size=params['chunk_size'], **params['kwargs']),
         'clean': lambda: clean_data(df, params['cleaning_strategies']),
@@ -75,7 +96,17 @@ def _execute_step(step: str, df: dd.DataFrame, params: dict, pbar: tqdm) -> dd.D
     return step_handlers.get(step, lambda: df)()
 
 def _handle_large_dataset(df: dd.DataFrame, memory_limit: Optional[int], n_workers: int) -> dd.DataFrame:
-    """Handle large datasets if they exceed memory limit."""
+    """
+    Handle large datasets if they exceed memory limit.
+
+    Args:
+        df (dd.DataFrame): The dataframe to handle.
+        memory_limit (Optional[int]): Memory limit in bytes.
+        n_workers (int): Number of workers.
+
+    Returns:
+        dd.DataFrame: Handled dataframe.
+    """
     if memory_limit and df.memory_usage().sum().compute() > memory_limit:
         return df.to_bag().repartition(npartitions=n_workers)
     return df
@@ -99,21 +130,24 @@ def process_data(
     """
     Main function to load, clean, and transform data, optimized for large files.
 
-    :param source: str, path to file or URL or SQL connection string
-    :param steps: list of steps to perform in the pipeline
-    :param cleaning_strategies: dict, cleaning strategies for each column
-    :param numeric_features: list of numeric column names
-    :param categorical_features: list of categorical column names
-    :param scale_strategy: strategy for scaling numeric features
-    :param encode_strategy: strategy for encoding categorical features
-    :param custom_transformations: list of custom transformation functions
-    :param chunk_size: size of chunks for processing large files
-    :param n_workers: number of workers for parallel processing
-    :param save_intermediate: whether to save intermediate results
-    :param intermediate_path: path to save intermediate results
-    :param memory_limit: memory limit for handling large datasets
-    :param kwargs: Additional arguments for data loading
-    :return: processed dask DataFrame
+    Args:
+        source (str): Path to file or URL or SQL connection string.
+        steps (Optional[List[str]]): List of steps to perform in the pipeline.
+        cleaning_strategies (Optional[Dict[str, Dict[str, str]]]): Cleaning strategies for each column.
+        numeric_features (Optional[List[str]]): List of numeric column names.
+        categorical_features (Optional[List[str]]): List of categorical column names.
+        scale_strategy (str): Strategy for scaling numeric features.
+        encode_strategy (str): Strategy for encoding categorical features.
+        custom_transformations (Optional[List[Callable]]): List of custom transformation functions.
+        chunk_size (Optional[int]): Size of chunks for processing large files.
+        n_workers (int): Number of workers for parallel processing.
+        save_intermediate (bool): Whether to save intermediate results.
+        intermediate_path (str): Path to save intermediate results.
+        memory_limit (Optional[int]): Memory limit for handling large datasets.
+        kwargs (Any): Additional arguments for data loading.
+
+    Returns:
+        dd.DataFrame: Processed dask DataFrame.
     """
     if steps is None:
         steps = ['load', 'clean', 'transform']

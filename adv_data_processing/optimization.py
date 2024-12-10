@@ -1,4 +1,3 @@
-
 """Memory and performance optimization utilities."""
 
 import pandas as pd
@@ -9,7 +8,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 def optimize_dataframe_dtypes(df: pd.DataFrame) -> pd.DataFrame:
-    """Optimize DataFrame memory usage by selecting appropriate dtypes."""
+    """
+    Optimize DataFrame memory usage by selecting appropriate dtypes.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to optimize.
+
+    Returns:
+        pd.DataFrame: Optimized DataFrame with reduced memory usage.
+    """
     df_optimized = df.copy()
     
     for col in df_optimized.columns:
@@ -27,15 +34,27 @@ def optimize_dataframe_dtypes(df: pd.DataFrame) -> pd.DataFrame:
                 df_optimized[col] = df_optimized[col].astype('int16')
         elif col_type == 'float64':
             df_optimized[col] = df_optimized[col].astype('float32')
-            
+    
+    logger.info("Optimized DataFrame dtypes")
     return df_optimized
 
 def get_memory_usage(df: pd.DataFrame) -> Dict[str, float]:
-    """Get memory usage statistics for DataFrame."""
+    """
+    Get memory usage statistics for DataFrame.
+
+    Args:
+        df (pd.DataFrame): The DataFrame to analyze.
+
+    Returns:
+        Dict[str, float]: Memory usage statistics including total memory and memory per column.
+    """
     memory_usage = df.memory_usage(deep=True)
     total_memory = memory_usage.sum() / 1024**2  # Convert to MB
     
-    return {
+    memory_stats = {
         'total_memory_mb': total_memory,
         'memory_per_column': {col: mem/1024**2 for col, mem in memory_usage.items()}
     }
+    
+    logger.info(f"Memory usage: {memory_stats}")
+    return memory_stats
