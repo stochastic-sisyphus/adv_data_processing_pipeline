@@ -31,6 +31,13 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine setuptools wheel
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
       - name: Cache build artifacts
         uses: actions/cache@v3
         with:
