@@ -1,4 +1,3 @@
-
 """Centralized metrics management for model evaluation."""
 
 import numpy as np
@@ -7,7 +6,7 @@ from sklearn.metrics import (
     mean_squared_error, r2_score, roc_auc_score,
     confusion_matrix
 )
-from typing import Dict, Any, List, Union, Callable
+from typing import Dict, Any, List, Union, Callable, Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -61,3 +60,49 @@ class MetricsManager:
                 results[metric] = None
                 
         return results
+
+    @classmethod
+    def calculate_advanced_metrics(
+        cls,
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        sample_weights: Optional[np.ndarray] = None
+    ) -> Dict[str, Any]:
+        """Calculate advanced metrics with detailed statistics."""
+        basic_metrics = cls.calculate_metrics(y_true, y_pred, 
+                                           ['accuracy', 'precision', 'recall'], 
+                                           'classification')
+        
+        conf_matrix = confusion_matrix(y_true, y_pred)
+        
+        return {
+            **basic_metrics,
+            'confusion_matrix': conf_matrix.tolist(),
+            'per_class_precision': precision_score(y_true, y_pred, average=None).tolist(),
+            'per_class_recall': recall_score(y_true, y_pred, average=None).tolist(),
+            'weighted_metrics': cls.calculate_metrics(
+                y_true, y_pred, 
+                ['precision', 'recall', 'f1'],
+                'classification',
+                sample_weight=sample_weights
+            )
+        }
+
+    @staticmethod
+    def generate_metrics_report(metrics: Dict[str, Any], output_file: str):
+        """Generate detailed metrics report."""
+        with open(output_file, 'w') as f:
+            f.write("Model Evaluation Report\n")
+            f.write("=====================\n\n")
+            
+            for metric_name, value in metrics.items():
+                if isinstance(value, (float, int)):
+                    f.write(f"{metric_name}: {value:.4f}\n")
+                elif isinstance(value, list):
+                    f.write(f"{metric_name}:\n")
+                    for i, v in enumerate(value):
+                        f.write(f"  Class {i}: {v:.4f}\n")
+                elif isinstance(value, dict):
+                    f.write(f"{metric_name}:\n")
+                    for k, v in value.items():
+                        f.write(f"  {k}: {v:.4f}\n")

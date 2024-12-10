@@ -34,29 +34,24 @@ This package is available on PyPI, and you can view it at the provided URL: [htt
 - Automated model documentation generation
 - CI/CD pipeline integration
 - Containerization support with Docker
+- Efficient batch processing with automatic memory optimization
+- GPU acceleration support via PyTorch
+- Advanced performance monitoring and optimization
 
 ## Requirements
 
 See `requirements.txt` for a full list of dependencies. Key libraries include:
 
-- pandas
-- dask
-- dask-ml
-- scikit-learn
-- nltk
-- spacy
-- gensim
-- matplotlib
-- seaborn
-- imbalanced-learn
-- mlflow>=1.20.0
-- optuna>=2.10.0
-- shap>=0.40.0
-- lime>=0.2.0
-- fastapi>=0.68.0
-- docker>=5.0.0
-- great-expectations>=0.13.0
-- kedro>=0.17.0
+- pandas>=1.3.0
+- dask[complete]>=2022.1.0
+- scikit-learn>=1.0.0
+- numpy>=1.20.0
+- psutil>=5.9.0
+- torch>=2.0.0
+- mlflow>=2.6.0
+- optuna>=3.0.0
+- wandb>=0.15.0
+- ray>=2.6.0
 
 ## Installation
 
@@ -362,4 +357,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Documentation
 
-For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.2.1/).
+For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.2.4/).
+
+## Tutorials and Examples
+
+### Time Series Analysis Example

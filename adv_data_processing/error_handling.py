@@ -3,11 +3,12 @@
 import sys
 import traceback
 import logging
-from typing import Type, Callable, Any, Optional
+from typing import Type, Callable, Any, Optional, Dict
 from functools import wraps
 from contextlib import contextmanager
 import pandas as pd
 import numpy as np
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,14 @@ class DataValidationError(PipelineError):
 
 class ConfigurationError(PipelineError):
     """Raised when configuration validation fails."""
+    pass
+
+class DataProcessingError(PipelineError):
+    """Error raised during data processing steps."""
+    pass
+
+class MemoryError(PipelineError):
+    """Error raised when memory limits are exceeded."""
     pass
 
 @contextmanager
@@ -73,3 +82,33 @@ def log_step(step: str, message: str):
     logger.info(f"Starting step: {step}")
     logger.info(message)
     logger.info(f"Completed step: {step}")
+
+def create_error_report(
+    error: Exception,
+    step: str,
+    context: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Create detailed error report with context."""
+    return {
+        'step': step,
+        'error_type': type(error).__name__,
+        'error_message': str(error),
+        'traceback': traceback.format_exc(),
+        'context': context,
+        'timestamp': pd.Timestamp.now().isoformat()
+    }
+
+@contextmanager
+def performance_guard(memory_threshold: float = 0.9):
+    """Context manager to monitor system resources during execution."""
+    try:
+        yield
+    except Exception as e:
+        process = psutil.Process()
+        memory_percent = process.memory_percent()
+        
+        if memory_percent > memory_threshold * 100:
+            raise MemoryError(
+                f"Memory usage exceeded threshold: {memory_percent:.1f}%"
+            ) from e
+        raise

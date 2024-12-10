@@ -1,4 +1,3 @@
-
 """Batch processing utilities for efficient data handling."""
 
 from typing import Iterator, Tuple, Optional, List
@@ -39,6 +38,34 @@ def get_optimal_batch_size(data_size: int, sample_size_bytes: int) -> int:
     
     batch_size = int(target_memory_usage / (sample_size_bytes * 2))  # Factor of 2 for safety
     return min(batch_size, data_size)
+
+def get_memory_efficiency_score(batch_size: int, features_shape: Tuple[int, ...]) -> float:
+    """Calculate memory efficiency score for given batch size."""
+    sample_size = np.prod(features_shape) * 4  # 4 bytes per float32
+    batch_memory = sample_size * batch_size
+    available_memory = psutil.virtual_memory().available
+    return 1 - (batch_memory / available_memory)
+
+def optimize_batch_configuration(
+    data_shape: Tuple[int, ...],
+    target_memory_usage: float = 0.7,
+    max_workers: int = 8
+) -> BatchConfig:
+    """Optimize batch processing configuration based on system resources."""
+    cpu_count = psutil.cpu_count(logical=False)
+    num_workers = min(cpu_count - 1, max_workers)
+    
+    optimal_batch_size = get_optimal_batch_size(
+        data_shape[0],
+        np.prod(data_shape[1:]) * 4
+    )
+    
+    return BatchConfig(
+        batch_size=optimal_batch_size,
+        num_workers=num_workers,
+        pin_memory=torch.cuda.is_available(),
+        prefetch_factor=2
+    )
 
 def create_data_loader(
     features: np.ndarray,

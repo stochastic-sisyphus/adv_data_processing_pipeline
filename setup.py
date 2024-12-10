@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="advanced-data-processing",
-    version="0.2.3",  # Incremented version
+    version="0.2.4",  # Incremented version
     author="Vanessa Beck",
     author_email="your.email@example.com",
     description="An advanced data processing pipeline for machine learning workflows",
@@ -41,6 +41,10 @@ setup(
         'boto3>=1.26.0',
         'requests>=2.28.0',
         'cerberus>=1.3.4',
+        'psutil>=5.9.0',
+        'torch>=2.0.0',
+        'optuna>=3.0.0',
+        'mlflow>=2.6.0'
     ],
 )
 

@@ -1,4 +1,3 @@
-
 """Data validation and schema management."""
 
 from typing import Dict, Any, Optional
@@ -16,14 +15,53 @@ class DataValidator:
         self.schema = schema
         self.validator = Validator(schema)
         
-    def validate_dataframe(self, df: pd.DataFrame) -> bool:
-        """Validate DataFrame against schema."""
+    def validate_dataframe(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """Validate DataFrame against schema with detailed reporting."""
+        validation_results = {
+            'is_valid': True,
+            'errors': [],
+            'warnings': [],
+            'summary': {}
+        }
+
         try:
+            # Basic schema validation
             data_dict = df.to_dict('records')[0]
-            return self.validator.validate(data_dict)
+            schema_valid = self.validator.validate(data_dict)
+            
+            if not schema_valid:
+                validation_results['is_valid'] = False
+                validation_results['errors'].extend(
+                    [f"Column '{k}': {v}" for k, v in self.validator.errors.items()]
+                )
+
+            # Check for missing required columns
+            missing_cols = set(self.schema.keys()) - set(df.columns)
+            if missing_cols:
+                validation_results['is_valid'] = False
+                validation_results['errors'].append(
+                    f"Missing required columns: {', '.join(missing_cols)}"
+                )
+
+            # Check data types
+            type_validation = self.check_data_types(df)
+            invalid_types = {k: v for k, v in type_validation.items() if not v}
+            if invalid_types:
+                validation_results['errors'].extend(
+                    [f"Invalid type for column '{k}'" for k in invalid_types]
+                )
+
+            # Check for missing values
+            missing_stats = self.check_missing_values(df)
+            validation_results['summary']['missing_values'] = missing_stats
+
+            return validation_results
+
         except Exception as e:
             logger.error(f"Validation error: {str(e)}")
-            return False
+            validation_results['is_valid'] = False
+            validation_results['errors'].append(f"Validation error: {str(e)}")
+            return validation_results
     
     def check_missing_values(
         self,
