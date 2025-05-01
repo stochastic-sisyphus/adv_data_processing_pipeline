@@ -10,6 +10,13 @@ logger = logging.getLogger(__name__)
 def transform_data(df: dd.DataFrame, config: Dict[str, Any]) -> dd.DataFrame:
     """
     Transform the data based on the provided configuration.
+
+    Args:
+        df (dd.DataFrame): The dataframe to transform.
+        config (Dict[str, Any]): The configuration for transformation.
+
+    Returns:
+        dd.DataFrame: The transformed dataframe.
     """
     try:
         df = transform_numerical_features(df, config.get('numerical_features', []), config.get('scaling_method', 'standard'))
@@ -21,7 +28,17 @@ def transform_data(df: dd.DataFrame, config: Dict[str, Any]) -> dd.DataFrame:
         raise
 
 def transform_numerical_features(df: dd.DataFrame, numerical_features: List[str], method: str = 'standard') -> dd.DataFrame:
-    """Transform numerical features using the specified scaling method."""
+    """
+    Transform numerical features using the specified scaling method.
+
+    Args:
+        df (dd.DataFrame): The dataframe containing numerical features.
+        numerical_features (List[str]): List of numerical feature names.
+        method (str, optional): Scaling method ('standard' or 'minmax'). Defaults to 'standard'.
+
+    Returns:
+        dd.DataFrame: Dataframe with transformed numerical features.
+    """
     if method == 'standard':
         scaler = StandardScaler()
     elif method == 'minmax':
@@ -33,7 +50,17 @@ def transform_numerical_features(df: dd.DataFrame, numerical_features: List[str]
     return df
 
 def transform_categorical_features(df: dd.DataFrame, categorical_features: List[str], method: str = 'onehot') -> dd.DataFrame:
-    """Transform categorical features using the specified encoding method."""
+    """
+    Transform categorical features using the specified encoding method.
+
+    Args:
+        df (dd.DataFrame): The dataframe containing categorical features.
+        categorical_features (List[str]): List of categorical feature names.
+        method (str, optional): Encoding method ('onehot' or 'label'). Defaults to 'onehot'.
+
+    Returns:
+        dd.DataFrame: Dataframe with transformed categorical features.
+    """
     if method == 'onehot':
         encoder = OneHotEncoder(sparse=False)
         encoded = encoder.fit_transform(df[categorical_features])
@@ -49,7 +76,17 @@ def transform_categorical_features(df: dd.DataFrame, categorical_features: List[
     return df
 
 def transform_text_features(df: dd.DataFrame, text_features: List[str], method: str = 'tfidf') -> dd.DataFrame:
-    """Transform text features using the specified vectorization method."""
+    """
+    Transform text features using the specified vectorization method.
+
+    Args:
+        df (dd.DataFrame): The dataframe containing text features.
+        text_features (List[str]): List of text feature names.
+        method (str, optional): Vectorization method ('tfidf'). Defaults to 'tfidf'.
+
+    Returns:
+        dd.DataFrame: Dataframe with transformed text features.
+    """
     if method == 'tfidf':
         vectorizer = TfidfVectorizer()
         for feature in text_features:
@@ -62,4 +99,3 @@ def transform_text_features(df: dd.DataFrame, text_features: List[str], method: 
         raise ValueError(f"Unsupported text vectorization method: {method}")
     
     return df
-

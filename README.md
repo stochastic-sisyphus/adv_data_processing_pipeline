@@ -3,7 +3,7 @@
 
 This project implements a sophisticated data processing pipeline using Python, designed to handle large-scale data processing tasks efficiently. The pipeline includes various stages such as data loading, cleaning, transformation, analysis, and visualization.
 
-This package is available on PyPI, and you can view it at the provided URL: [https://pypi.org/project/advanced-data-processing/0.1.0/](https://pypi.org/project/advanced-data-processing/0.1.0/).
+This package is available on PyPI, and you can view it at the provided URL: [https://pypi.org/project/advanced-data-processing/](https://pypi.org/project/advanced-data-processing/).
 
 [![PyPI version](https://badge.fury.io/py/advanced-data-processing.svg)](https://badge.fury.io/py/advanced-data-processing)
 
@@ -24,21 +24,34 @@ This package is available on PyPI, and you can view it at the provided URL: [htt
 - Automatic feature engineering
 - Handling of imbalanced datasets
 - Automatic hyperparameter tuning
+- Automatic model checkpointing and experiment tracking
+- Integrated GPU support with fallback to CPU
+- Comprehensive logging and monitoring
+- Model explainability tools (SHAP, LIME)
+- Data drift detection and monitoring
+- API endpoint generation for model serving
+- Model versioning and registry
+- Automated model documentation generation
+- CI/CD pipeline integration
+- Containerization support with Docker
+- Efficient batch processing with automatic memory optimization
+- GPU acceleration support via PyTorch
+- Advanced performance monitoring and optimization
 
 ## Requirements
 
 See `requirements.txt` for a full list of dependencies. Key libraries include:
 
-- pandas
-- dask
-- dask-ml
-- scikit-learn
-- nltk
-- spacy
-- gensim
-- matplotlib
-- seaborn
-- imbalanced-learn
+- pandas>=1.3.0
+- dask[complete]>=2022.1.0
+- scikit-learn>=1.0.0
+- numpy>=1.20.0
+- psutil>=5.9.0
+- torch>=2.0.0
+- mlflow>=2.6.0
+- optuna>=3.0.0
+- wandb>=0.15.0
+- ray>=2.6.0
 
 ## Installation
 
@@ -60,6 +73,12 @@ To build and install the package locally:
 
 ```
 pip install -e .
+```
+
+For development installation with all features:
+
+```
+pip install -r requirements-dev.txt
 ```
 
 ## Usage
@@ -338,4 +357,53 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Documentation
 
-For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.1.0/).
+For more detailed usage instructions and examples, please refer to the full documentation [here](https://pypi.org/project/advanced-data-processing/0.2.4/).
+
+## Tutorials and Examples
+
+### Time Series Analysis Example
+
+## Environment Setup Instructions
+
+To set up the environment for this project, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/stochastic-sisyphus/adv_data_processing_pipeline.git
+   cd adv_data_processing_pipeline
+   ```
+
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. For development, install additional dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+
+## Contribution Guidelines
+
+We welcome contributions to the Advanced Data Processing Pipeline project. To contribute, please follow these guidelines:
+
+1. Fork the repository and create a new branch for your feature or bugfix.
+2. Write clear, concise commit messages.
+3. Ensure that your code follows the project's coding standards and passes all tests.
+4. Submit a pull request with a detailed description of your changes.
+
+## Changelog
+
+### Version 0.2.6
+
+- Added environment setup instructions to the README.
+- Added contribution guidelines to the README.
+- Added changelog to the README.
+- Added performance reports and pipeline diagrams.
+- Added baseline model metrics for comparison.

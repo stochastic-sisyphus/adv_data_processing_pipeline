@@ -19,7 +19,17 @@ def handle_imbalanced_data(
     target_col: str,
     method: str = 'smote'
 ) -> dd.DataFrame:
-    """Handle imbalanced datasets using various techniques."""
+    """
+    Handle imbalanced datasets using various techniques.
+
+    Args:
+        df (dd.DataFrame): The dataframe to handle imbalanced data in.
+        target_col (str): The target column name.
+        method (str, optional): The method to use for handling imbalanced data. Defaults to 'smote'.
+
+    Returns:
+        dd.DataFrame: The dataframe with balanced data.
+    """
     if not IMBLEARN_AVAILABLE:
         logger.warning("imblearn not available. Returning original dataframe.")
         return df
@@ -34,6 +44,7 @@ def handle_imbalanced_data(
         if method == 'smote':
             smote = SMOTE()
             X_resampled, y_resampled = smote.fit_resample(X, y)
+            logger.info(f"Applied SMOTE to balance the dataset")
             return dd.from_pandas(
                 pd.concat([X_resampled, y_resampled], axis=1),
                 npartitions=df.npartitions
