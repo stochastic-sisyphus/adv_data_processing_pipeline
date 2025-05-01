@@ -8,7 +8,16 @@ from dask_ml.impute import SimpleImputer
 logger = logging.getLogger(__name__)
 
 def validate_data(df: dd.DataFrame, schema: Dict[str, Any]) -> bool:
-    """Validate the dataframe against the given schema."""
+    """
+    Validate the dataframe against the given schema.
+
+    Args:
+        df (dd.DataFrame): The dataframe to validate.
+        schema (Dict[str, Any]): The schema to validate against.
+
+    Returns:
+        bool: True if the dataframe is valid, False otherwise.
+    """
     try:
         for column, rules in schema.items():
             if 'type' in rules and df[column].dtype != rules['type']:
@@ -25,7 +34,16 @@ def validate_data(df: dd.DataFrame, schema: Dict[str, Any]) -> bool:
         return False
 
 def clean_data(df: dd.DataFrame, config: Dict[str, Any]) -> dd.DataFrame:
-    """Clean the dataframe based on the provided configuration."""
+    """
+    Clean the dataframe based on the provided configuration.
+
+    Args:
+        df (dd.DataFrame): The dataframe to clean.
+        config (Dict[str, Any]): The configuration for cleaning.
+
+    Returns:
+        dd.DataFrame: The cleaned dataframe.
+    """
     try:
         if not validate_data(df, config.get('schema', {})):
             raise ValueError("Data validation failed")
@@ -41,7 +59,17 @@ def clean_data(df: dd.DataFrame, config: Dict[str, Any]) -> dd.DataFrame:
         raise
 
 def handle_missing_values(df: dd.DataFrame, column: str, strategy: Dict[str, str]) -> dd.DataFrame:
-    """Handle missing values based on the provided strategy."""
+    """
+    Handle missing values based on the provided strategy.
+
+    Args:
+        df (dd.DataFrame): The dataframe to handle missing values in.
+        column (str): The column to handle missing values in.
+        strategy (Dict[str, str]): The strategy for handling missing values.
+
+    Returns:
+        dd.DataFrame: The dataframe with missing values handled.
+    """
     try:
         if df[column].isnull().any().compute():
             if strategy.get('missing') == 'drop':
@@ -60,7 +88,17 @@ def handle_missing_values(df: dd.DataFrame, column: str, strategy: Dict[str, str
         raise
 
 def handle_outliers(df: dd.DataFrame, columns: List[str], method: str = 'iqr') -> dd.DataFrame:
-    """Handle outliers using the specified method."""
+    """
+    Handle outliers using the specified method.
+
+    Args:
+        df (dd.DataFrame): The dataframe to handle outliers in.
+        columns (List[str]): The columns to handle outliers in.
+        method (str, optional): The method to use for handling outliers. Defaults to 'iqr'.
+
+    Returns:
+        dd.DataFrame: The dataframe with outliers handled.
+    """
     for column in columns:
         if method == 'iqr':
             Q1 = df[column].quantile(0.25)
@@ -76,7 +114,15 @@ def handle_outliers(df: dd.DataFrame, columns: List[str], method: str = 'iqr') -
     return df
 
 def remove_duplicates(df: dd.DataFrame) -> dd.DataFrame:
-    """Remove duplicate rows from the dataframe."""
+    """
+    Remove duplicate rows from the dataframe.
+
+    Args:
+        df (dd.DataFrame): The dataframe to remove duplicates from.
+
+    Returns:
+        dd.DataFrame: The dataframe with duplicates removed.
+    """
     try:
         return df.drop_duplicates()
     except Exception as e:
@@ -84,7 +130,17 @@ def remove_duplicates(df: dd.DataFrame) -> dd.DataFrame:
         raise
 
 def handle_outliers_zscore(df: dd.DataFrame, columns: List[str], threshold: float = 3) -> dd.DataFrame:
-    """Handle outliers using the Z-score method."""
+    """
+    Handle outliers using the Z-score method.
+
+    Args:
+        df (dd.DataFrame): The dataframe to handle outliers in.
+        columns (List[str]): The columns to handle outliers in.
+        threshold (float, optional): The Z-score threshold. Defaults to 3.
+
+    Returns:
+        dd.DataFrame: The dataframe with outliers handled.
+    """
     try:
         for col in columns:
             z_scores = (df[col] - df[col].mean()) / df[col].std()
@@ -95,7 +151,16 @@ def handle_outliers_zscore(df: dd.DataFrame, columns: List[str], threshold: floa
         raise
 
 def convert_datatypes(df: dd.DataFrame, dtype_dict: Dict[str, str]) -> dd.DataFrame:
-    """Convert column datatypes based on the provided dictionary."""
+    """
+    Convert column datatypes based on the provided dictionary.
+
+    Args:
+        df (dd.DataFrame): The dataframe to convert datatypes in.
+        dtype_dict (Dict[str, str]): The dictionary of column datatypes to convert.
+
+    Returns:
+        dd.DataFrame: The dataframe with datatypes converted.
+    """
     try:
         for col, dtype in dtype_dict.items():
             df[col] = df[col].astype(dtype)
@@ -105,7 +170,16 @@ def convert_datatypes(df: dd.DataFrame, dtype_dict: Dict[str, str]) -> dd.DataFr
         raise
 
 def impute_missing_values(df: dd.DataFrame, strategies: Dict[str, str]) -> dd.DataFrame:
-    """Impute missing values using specified strategies."""
+    """
+    Impute missing values using specified strategies.
+
+    Args:
+        df (dd.DataFrame): The dataframe to impute missing values in.
+        strategies (Dict[str, str]): The strategies for imputing missing values.
+
+    Returns:
+        dd.DataFrame: The dataframe with missing values imputed.
+    """
     try:
         for col, strategy in strategies.items():
             if strategy == 'mean':
@@ -120,4 +194,3 @@ def impute_missing_values(df: dd.DataFrame, strategies: Dict[str, str]) -> dd.Da
     except Exception as e:
         logger.error(f"Error imputing missing values: {str(e)}")
         raise
-

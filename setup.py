@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-with open("readme.md", "r", encoding="utf-8") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="advanced-data-processing",
-    version="0.2.1",
+    version="0.2.7",  # Increment version
     author="Vanessa Beck",
     author_email="your.email@example.com",
     description="An advanced data processing pipeline for machine learning workflows",
@@ -22,15 +22,17 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    python_requires='>=3.8',
+    python_requires='>=3.8,<3.13',  # Update Python version constraint
     install_requires=[
-        'dask>=2023.3.0',
-        'pandas>=1.5.0',
-        'numpy>=1.23.0',
-        'scikit-learn>=1.0.0',
+        "pandas>=1.5.0",
+        "dask[complete]>=2023.1.0",
+        "scikit-learn>=1.0.0",
+        "numpy>=1.23.0",
         'beautifulsoup4>=4.11.0',
         'pyyaml>=6.0.0',
         'tenacity>=8.0.0',
@@ -41,6 +43,10 @@ setup(
         'boto3>=1.26.0',
         'requests>=2.28.0',
         'cerberus>=1.3.4',
+        'psutil>=5.9.0',
+        'torch>=2.1.0',
+        'optuna>=3.3.0',
+        'mlflow>=2.8.0'
     ],
 )
 
