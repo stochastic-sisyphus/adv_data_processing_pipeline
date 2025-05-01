@@ -1,4 +1,3 @@
-
 """Configuration management for the data processing pipeline."""
 
 import os
@@ -26,6 +25,7 @@ class PipelineConfig:
         try:
             with open(config_path, 'r') as f:
                 config = yaml.safe_load(f)
+            logger.info(f"Loaded config from {config_path}")
             return cls(**config)
         except Exception as e:
             logger.error(f"Failed to load config from {config_path}: {str(e)}")
@@ -42,6 +42,7 @@ def validate_config(config: PipelineConfig) -> bool:
         for section in required_sections:
             if not hasattr(config, section):
                 raise ValueError(f"Missing required config section: {section}")
+        logger.info("Config validation successful")
         return True
     except Exception as e:
         logger.error(f"Config validation failed: {str(e)}")

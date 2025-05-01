@@ -1,9 +1,8 @@
-# feature_engineering.py
+"""Feature engineering functions for the data processing pipeline."""
+
 import logging
-from typing import Dict, Any, Optional
-import pandas as pd
+from typing import Dict, Any
 import dask.dataframe as dd
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,17 @@ def auto_feature_engineering(
     target_col: str,
     config: Dict[str, Any]
 ) -> dd.DataFrame:
-    """Automatically engineer features based on configuration."""
+    """
+    Automatically engineer features based on configuration.
+
+    Args:
+        df (dd.DataFrame): The dataframe to engineer features in.
+        target_col (str): The target column name.
+        config (Dict[str, Any]): The configuration for feature engineering.
+
+    Returns:
+        dd.DataFrame: The dataframe with engineered features.
+    """
     if not isinstance(df, dd.DataFrame):
         raise TypeError("Input must be a dask DataFrame")
     
@@ -37,10 +46,20 @@ def auto_feature_engineering(
     if config.get('create_interaction_features'):
         result = create_interaction_features(result)
         
+    logger.info("Completed auto feature engineering")
     return result
 
 def create_polynomial_features(df: dd.DataFrame, degree: int = 2) -> dd.DataFrame:
-    """Create polynomial features."""
+    """
+    Create polynomial features.
+
+    Args:
+        df (dd.DataFrame): The dataframe to create polynomial features in.
+        degree (int, optional): The degree of the polynomial features. Defaults to 2.
+
+    Returns:
+        dd.DataFrame: The dataframe with polynomial features.
+    """
     if not DASK_ML_AVAILABLE:
         logger.warning("dask_ml not available. Returning original dataframe.")
         return df
@@ -55,7 +74,15 @@ def create_polynomial_features(df: dd.DataFrame, degree: int = 2) -> dd.DataFram
         return df
 
 def create_interaction_features(df: dd.DataFrame) -> dd.DataFrame:
-    """Create interaction features between numeric columns."""
+    """
+    Create interaction features between numeric columns.
+
+    Args:
+        df (dd.DataFrame): The dataframe to create interaction features in.
+
+    Returns:
+        dd.DataFrame: The dataframe with interaction features.
+    """
     try:
         numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns
         result = df.copy()
@@ -64,6 +91,7 @@ def create_interaction_features(df: dd.DataFrame) -> dd.DataFrame:
             for col2 in numeric_cols[i+1:]:
                 result[f'interaction_{col1}_{col2}'] = df[col1] * df[col2]
                 
+        logger.info("Created interaction features")
         return result
         
     except Exception as e:

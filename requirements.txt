@@ -24,3 +24,5 @@ imbalanced-learn
 cerberus
 textblob
 scipy
+pylint
+flake8

@@ -1,4 +1,3 @@
-
 import pytest
 from pathlib import Path
 import yaml
@@ -32,3 +31,23 @@ def test_invalid_config():
     invalid_config = {'data_source': {}}  # Missing required sections
     with pytest.raises(ValueError):
         PipelineConfig(**invalid_config)
+
+def test_edge_case_empty_config():
+    empty_config = {}
+    with pytest.raises(TypeError):
+        PipelineConfig(**empty_config)
+
+def test_edge_case_missing_sections():
+    missing_sections_config = {
+        'data_source': {'type': 'csv', 'path': 'data/input.csv'}
+    }
+    with pytest.raises(ValueError):
+        validate_config(PipelineConfig(**missing_sections_config))
+
+def test_integration_config_loading_and_validation(tmp_path, sample_config):
+    config_path = tmp_path / 'test_config.yaml'
+    with open(config_path, 'w') as f:
+        yaml.dump(sample_config, f)
+    
+    config = PipelineConfig.from_yaml(str(config_path))
+    assert validate_config(config)
