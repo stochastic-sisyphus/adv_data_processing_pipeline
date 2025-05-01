@@ -24,6 +24,6 @@ imbalanced-learn
 cerberus
 textblob
 scipy
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
 pylint
 flake8
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
