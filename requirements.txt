@@ -27,3 +27,4 @@ scipy
 zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
 pylint
 flake8
+tornado>=6.5 # not directly required, pinned by Snyk to avoid a vulnerability
